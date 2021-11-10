@@ -29,6 +29,10 @@ dependencies {
 
     // test
     implementation 'com.h2database:h2:1.4.200'
+    
+    // mysql
+    implementation 'mysql:mysql-connector-java:8.0.27'
+
 
 }
 

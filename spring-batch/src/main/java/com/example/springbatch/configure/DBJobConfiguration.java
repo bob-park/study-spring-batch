@@ -11,41 +11,43 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Slf4j
-//@Configuration
+@Configuration
 @RequiredArgsConstructor
-public class HelloJobConfiguration {
+public class DBJobConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Job helloJob() {
-        return jobBuilderFactory.get("helloJob")
-            .start(helloStep1()) // 시작 step
-            .next(helloStep2()) // start 후 다음 실행할 step
+    public Job job() {
+        return jobBuilderFactory.get("job")
+            .start(step1())
+            .next(step2())
             .build();
     }
 
     @Bean
-    public Step helloStep1() {
-        return stepBuilderFactory.get("helloStep1")
+    public Step step1() {
+        return stepBuilderFactory.get("step1")
             .tasklet((contribution, chunkContext) -> {
-                log.info(" ======================= ");
-                log.info(" >> Hello Spring Batch!! ");
-                log.info(" ======================= ");
-                return RepeatStatus.FINISHED; // ! null or FINISHED 은 한번 실행 후 종료
-            }).build();
+
+                log.info("step1 was execute");
+
+                return RepeatStatus.FINISHED;
+            })
+            .build();
     }
 
     @Bean
-    public Step helloStep2() {
-        return stepBuilderFactory.get("helloStep2")
+    public Step step2() {
+        return stepBuilderFactory.get("step2")
             .tasklet((contribution, chunkContext) -> {
-                log.info(" ======================= ");
-                log.info(" >> step2 was execute ");
-                log.info(" ======================= ");
+
+                log.info("step2 was execute");
+
                 return RepeatStatus.FINISHED;
-            }).build();
+            })
+            .build();
     }
 
 }

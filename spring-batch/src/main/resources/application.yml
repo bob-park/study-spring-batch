@@ -1,0 +1,43 @@
+# spring
+spring:
+  profiles:
+    active: local
+
+
+---
+
+## local
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+
+---
+
+## mysql
+spring:
+  config:
+    activate:
+      on-profile: mysql
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:13306/study_batch?useUnicode=true&characterEncoding=utf8
+    username: batch
+    password: 12345
+  # batch
+  batch:
+    jdbc:
+      # batch 를 사용할 경우 항상 batch 관련 DB 스키마가 생성되어야 한다.
+      # 아래는 Batch 관련 DB 스키마를 어떻게 생성할건지에 대한 설정이다.
+      ## always : 자동 실행 - application start 때마다 실행 - 개발 O - 실무 X
+      ## embedded : DB 가 실행시 포함되어있는 경우 - ex:) h2
+      ## never : application start 전 수동으로 실행해줘야 함 - 실무 O
+      # 해당 DB 스키마는 다음 위치에 있다.
+      # path : {dependency}/spring-batch-core/org.springframework.batch.core/schema-x.sql
+      initialize-schema: never
+
