@@ -41,5 +41,5 @@ spring:
       # path : {dependency}/spring-batch-core/org.springframework.batch.core/schema-x.sql
       initialize-schema: always
     job:
-      enabled: false # Spring Batch 의 기본 JobRunner 가 아닌 설정한 Custom Job Runner 가 실행된다.
+      enabled: true # false:  Spring Batch 의 기본 JobRunner 가 아닌 설정한 Custom Job Runner 가 실행된다.
 

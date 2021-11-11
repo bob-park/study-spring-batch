@@ -1,10 +1,8 @@
 package com.example.springbatch.configure;
 
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -12,10 +10,18 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * 알아야 할 것
+ *
+ * <pre>
+ *     - JobExecution 은 JobInstance 가 실행될때마다 생성됨
+ *     - JobInstance 는 같은 Job + JobParameters 에 의해 1번만 실행되지만, 마지막 JobExecution 의 상태가 COMPLETED 가 아닌 경우 재실행이 가능하다.
+ * </pre>
+ */
 @Slf4j
-//@Configuration
+@Configuration
 @RequiredArgsConstructor
-public class JobParameterConfiguration {
+public class JobExecutionConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -30,22 +36,8 @@ public class JobParameterConfiguration {
 
     @Bean
     public Step step1() {
-        // Job Parameter 는 Step 단계에서 참조할 수 있다.
         return stepBuilderFactory.get("step1")
             .tasklet((contribution, chunkContext) -> {
-
-                // contribution 으로 job parameter 가져오기 - 실사용시
-                JobParameters jobParameters = contribution.getStepExecution().getJobParameters();
-
-                jobParameters.getString("name");
-                jobParameters.getLong("seq");
-                jobParameters.getDate("date");
-                jobParameters.getDouble("age");
-
-                // chunk context 로 job parameter 가져오기 - 값 확인용
-                Map<String, Object> jobParamMap = chunkContext.getStepContext()
-                    .getJobParameters();
-
                 log.info("step1 was execute");
                 return RepeatStatus.FINISHED;
             })
@@ -57,9 +49,9 @@ public class JobParameterConfiguration {
         return stepBuilderFactory.get("step2")
             .tasklet((contribution, chunkContext) -> {
                 log.info("step2 was execute");
+//                throw new IllegalStateException("step2 failed.");
                 return RepeatStatus.FINISHED;
             })
             .build();
     }
-
 }

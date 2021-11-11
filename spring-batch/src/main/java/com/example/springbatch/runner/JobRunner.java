@@ -9,15 +9,12 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
 /**
- *
  * ! 주의사항
  *
  * <pre>
  *      - 같은 Job + Job Parameters 가 같은 경우 같은 Job Instance 가 반환된다.
- *      - 이미 실행된 Job Instance 는 다시 실행되지 않는다.
+ *      - 같은 Job + Job Parameters 로 실행된(JobExecution 의 Status 가 Completed 인 경우) Job Instance 는 다시 실행되지 않는다.
  * </pre>
- *
- *
  */
 //@Component
 @RequiredArgsConstructor
