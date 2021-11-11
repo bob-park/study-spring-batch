@@ -8,11 +8,12 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 @Slf4j
-//@Configuration
+@Configuration
 @RequiredArgsConstructor
-public class DBJobConfiguration {
+public class JobInstanceConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -29,9 +30,7 @@ public class DBJobConfiguration {
     public Step step1() {
         return stepBuilderFactory.get("step1")
             .tasklet((contribution, chunkContext) -> {
-
                 log.info("step1 was execute");
-
                 return RepeatStatus.FINISHED;
             })
             .build();
@@ -41,9 +40,7 @@ public class DBJobConfiguration {
     public Step step2() {
         return stepBuilderFactory.get("step2")
             .tasklet((contribution, chunkContext) -> {
-
                 log.info("step2 was execute");
-
                 return RepeatStatus.FINISHED;
             })
             .build();
