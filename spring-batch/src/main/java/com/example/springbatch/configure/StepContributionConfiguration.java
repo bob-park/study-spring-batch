@@ -11,25 +11,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * StepExecution
+ * StepContribution
  *
  * <pre>
- *     - Step 에 대한 한번의 시도
- *     - Step 의 실행 정보를 갖는다.
- *     - Step 이 매번 시도될 떄마다 생성되며, 각 Step 별로 생성됨
- *     - Job 이 재시작 하더라고 이미 성공적으로 완료된 Step 은 재 실행되지 않고, 실패한 Step 만 실행된다.
- *     - Step 이 실제로 시작됬을 때만, StepExecution 이 생성된다.
- *     
- *     - StepExecution 상태가 모두 정상적으로 완료되야 JobExecution 이 완료 된다.
- *     - Step 의 StepExecution 중 하나라도 실패되면, JobExecution 은 실패된다.
+ *     - Chunk process 의 변경 사항을 버퍼링한 후 StepExecution 상태를 업데이트하는 도메인 객체
+ *     - Chunk 커밋 직전에 StepExecution 의 apply 메서드를 호출하여 상태를 업데이트 함
+ *     - ExitStatus 의 기본 종료코드 외 사용자 정의 종료코드를 생성해서 적용할 수 있음
  * </pre>
- *
- *
  */
 @Slf4j
-//@Configuration
+@Configuration
 @RequiredArgsConstructor
-public class StepExecutionConfiguration {
+public class StepContributionConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
