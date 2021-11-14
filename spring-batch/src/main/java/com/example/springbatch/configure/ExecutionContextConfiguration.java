@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
  * </pre>
  */
 @Slf4j
-@Configuration
+//@Configuration
 @RequiredArgsConstructor
 public class ExecutionContextConfiguration {
 
