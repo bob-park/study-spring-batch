@@ -1,5 +1,6 @@
 package com.example.springbatch.configure;
 
+import com.example.springbatch.step.CustomTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -12,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 @Slf4j
 //@Configuration
 @RequiredArgsConstructor
-public class DBJobConfiguration {
+public class StepConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -29,9 +30,7 @@ public class DBJobConfiguration {
     public Step step1() {
         return stepBuilderFactory.get("step1")
             .tasklet((contribution, chunkContext) -> {
-
                 log.info("step1 was execute");
-
                 return RepeatStatus.FINISHED;
             })
             .build();
@@ -40,13 +39,7 @@ public class DBJobConfiguration {
     @Bean
     public Step step2() {
         return stepBuilderFactory.get("step2")
-            .tasklet((contribution, chunkContext) -> {
-
-                log.info("step2 was execute");
-
-                return RepeatStatus.FINISHED;
-            })
+            .tasklet(new CustomTasklet())
             .build();
     }
-
 }

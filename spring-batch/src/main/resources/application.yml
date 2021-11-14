@@ -39,5 +39,7 @@ spring:
       ## never : application start 전 수동으로 실행해줘야 함 - 실무 O
       # 해당 DB 스키마는 다음 위치에 있다.
       # path : {dependency}/spring-batch-core/org.springframework.batch.core/schema-x.sql
-      initialize-schema: never
+      initialize-schema: always
+    job:
+      enabled: false # false:  Spring Batch 의 기본 JobRunner 가 아닌 설정한 Custom Job Runner 가 실행된다.
 
