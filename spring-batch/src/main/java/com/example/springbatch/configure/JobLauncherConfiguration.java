@@ -12,42 +12,38 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * JobRepository
+ * JobLauncher
  *
  * <pre>
- *     - Batch 작업중의 정보를 저장하는 저장소 역할
- *     - Job 이 언제 수행, 언제 끝났으며, 몇번 실행되었는지 등 CRUD 를 담당
+ *     - Batch Job 을 실행시키는 역할
+ *     - Job 과 Job Parameters 를 인자로 받으며, 요청된 Batch Job 을 수행 후 최종 Client 에게 JobExecution 를 반환
  *
- *     - @EnableBatchProcessing 을 선언하면 JobRepository 가 자동으로 빈을 생성
- *     - BatchConfigurer 인터페이스를 구현하거나 BasicBatchConfigurer 를 상속하여 JobRepository 설정을 커스터마이징 할 수 있다.
- *
- *     - JDBC 방식 (JobRepositoryFactoryBean)
- *          - 내부적으로 AOP 기술을 통해 트랜잭션 처리를 해주고 있음
- *          - 트랜잭션 Isolation 의 기본값은 Serializable 으로 최고 수준, 다른 레벨(READ_COMMITTED, REPEATABLE_READ) 로 지정 가능
- *          - 메타테이블의 table prefix 를 변경 가능, default: BATCH_
- *
- *     - In Memory 방식 (MapJobRepositoryFactoryBean)
- *          - 성능 등의 이유로 Domain Object 를 굳이 데이터베이스에 저장하고 싶지 않을 경우
- *          - 보통 Test 나 프로토타입의 빠른 개발이 필요할때 사용
- *
+ *     - Job 실행
+ *          - JobLauncher.run(Job, JobParameters)
+ *          - Spring boot Batch 에서는 JobLauncherApplicationRunner 가 자동으로 JobLauncher 실행
+ *          - 동기적 실행
+ *              - taskExecutor 를 SyncTaskExecutor 로 설정할 경우 (default : SyncTaskExecutor)
+ *              - JobExecution 을 획득하고 배치 처리를 최종 완료한 이후 Client 에게 JobExecution 을 반환
+ *              - Scheduler 에 의한 배치 처리에 적합함 - 배치 처리 시간이 길어도 상관없는 경우
+ *          - 비 동기적 실행
+ *              - taskExecutor 를 SimpleAsyncTaskExecutor 로 설정한 경우
+ *              - JobExecution 을 획득한 후 Client 에게 바로 JobExecution 를 반환하고 배치 처리를 완료 한다.
+ *              - HTTP Request 에 의한 배치처리에 적합함 - 배치처리 시간이 길 경우 응답이 늦어지지 않도록 함
  * </pre>
  */
 @Slf4j
-//@Configuration
+@Configuration
 @RequiredArgsConstructor
-public class JobRepositoryConfiguration {
+public class JobLauncherConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-
-    private final JobExecutionListener jobExecutionListener;
 
     @Bean
     public Job job() {
         return jobBuilderFactory.get("job")
             .start(step1())
             .next(step2())
-            .listener(jobExecutionListener)
             .build();
     }
 
@@ -56,6 +52,9 @@ public class JobRepositoryConfiguration {
         return stepBuilderFactory.get("step1")
             .tasklet((contribution, chunkContext) -> {
                 log.info("step1 was execute");
+
+                Thread.sleep(3_000);
+
                 return RepeatStatus.FINISHED;
             })
             .build();
@@ -65,8 +64,8 @@ public class JobRepositoryConfiguration {
     public Step step2() {
         return stepBuilderFactory.get("step2")
             .tasklet((contribution, chunkContext) -> {
-                log.info("step2 was execute");
-                return RepeatStatus.FINISHED;
+
+                return null;
             })
             .build();
     }
