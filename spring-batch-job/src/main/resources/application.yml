@@ -32,14 +32,9 @@ spring:
   # batch
   batch:
     jdbc:
-      # batch 를 사용할 경우 항상 batch 관련 DB 스키마가 생성되어야 한다.
-      # 아래는 Batch 관련 DB 스키마를 어떻게 생성할건지에 대한 설정이다.
-      ## always : 자동 실행 - application start 때마다 실행 - 개발 O - 실무 X
-      ## embedded : DB 가 실행시 포함되어있는 경우 - ex:) h2
-      ## never : application start 전 수동으로 실행해줘야 함 - 실무 O
-      # 해당 DB 스키마는 다음 위치에 있다.
-      # path : {dependency}/spring-batch-core/org.springframework.batch.core/schema-x.sql
       initialize-schema: always
     job:
-      enabled: false # false:  Spring Batch 의 기본 JobRunner 가 아닌 설정한 Custom Job Runner 가 실행된다.
+#      names: job1
+      names: ${job.name:NONE}
+
 
