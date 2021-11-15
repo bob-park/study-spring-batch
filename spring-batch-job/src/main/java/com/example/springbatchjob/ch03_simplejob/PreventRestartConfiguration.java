@@ -1,30 +1,28 @@
 package com.example.springbatchjob.ch03_simplejob;
 
-import com.example.springbatchjob.ch03_simplejob.validator.CustomJobParametersValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.job.DefaultJobParametersValidator;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * SimpleJob Validator
+ * SimpleJob preventRestart()
  *
  * <pre>
- *      - Job 실행에 꼭 필요한 파라미터를 검증하는 용도
- *      - DefaultJobParametersValidator 구현체를 지원
- *      - 좀 더 복잡한 제약 조건이 있다면, Interface 를 직접 구현할 수 있음
+ *     - Job 의 재시작 여부를 설정
+ *     - Job 이 실패해도 재시작이 안되며, Job 을 재시작하려고 하면, JobRestartException 발생
+ *     - 재시작과 과련 있는 기능으로 Job 을 처음 실행하는 것과는 아무런 상관 없음
  * </pre>
  */
 @Slf4j
 @RequiredArgsConstructor
-//@Configuration
-public class SimpleJobValidatorConfiguration {
+@Configuration
+public class PreventRestartConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -35,13 +33,7 @@ public class SimpleJobValidatorConfiguration {
             .start(step1())
             .next(step2())
             .next(step3())
-            // Repository 에서 생성하기 전 실행, job 실행하기 전 실행, 총 2번 실행
-//            .validator(new CustomJobParametersValidator()) // Custom
-            .validator(new DefaultJobParametersValidator(
-                // required
-                new String[]{"name", "date"},
-                // optional
-                new String[]{"count"})) // default
+            .preventRestart() // 재시작하지 않도록 설정
             .build();
     }
 
@@ -59,7 +51,10 @@ public class SimpleJobValidatorConfiguration {
     public Step step2() {
         return stepBuilderFactory.get("step2")
             .tasklet((contribution, chunkContext) -> {
+
                 log.info("step2 was execute");
+//                throw new RuntimeException("step2 was failed.");
+
                 return RepeatStatus.FINISHED;
             })
             .build();
@@ -74,4 +69,5 @@ public class SimpleJobValidatorConfiguration {
             })
             .build();
     }
+
 }
