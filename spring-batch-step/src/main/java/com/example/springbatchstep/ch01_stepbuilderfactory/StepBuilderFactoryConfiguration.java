@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class StepBuilderFactoryConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
