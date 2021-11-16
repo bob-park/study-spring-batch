@@ -1,4 +1,4 @@
-package com.example.springbatchstep.ch02_taskletstep;
+package com.example.springbatchstep.ch02_taskletstep.tasklet;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;

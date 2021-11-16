@@ -13,28 +13,27 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Tasklet - tasklet()
+ * TaskletStep - startLimit() / allowStartIfComplete()
  *
  * <pre>
- *     - Tasklet Type 의 class 를 설정
- *          - Tasklet
- *              - Step 내에서 구성되고 실행되는 domain 객체, 주로 단일 task 로 수행
- *              - TaskletStep 에 의해 반복적으로 수행되며, 반환값에 따라 계속 수행 및 종료한다.
- *              - RepeatStatus - Tasklet 의 반복 여부 상태 값
- *                  - FINISHED : Tasklet 종료, RepeatStatus 를 null 로 반환하면 FINISHED 로 해석됨
- *                  - CONTINUABLE : Tasklet 반복
- *                  - FINISHED 가 리턴되거나 실패 예외가 던져지기 전까지 TaskletStep 에 의해 While 문 안에서 반복적으로 호출됨(무한 루프 주의)
+ *     - startLimit()
+ *          - Step 의 실행 횟수를 조정할 수 있다.
+ *          - Step 마다 설정할 수 있다.
+ *          - 설정값을 초과해서 다시 실행하려고 하면, StartLimitExceededException 발생
+ *          - start-limit 의 default : Integer.MAX_VALUE
  *
- *
- *      - 익명 클래스 혹은 구현 클래스를 만들어서 사용
- *      - 이 메소드를 실행하게 되면, TaskletStepBuilder 가 반환되어, 관련 API 를 설정할 수 있다.
- *      - Step 에 오직 하나의 Tasklet 설정이 가능하며, 두개 이상을 설정했을 경우 마지막에 설정한 객체가 실행된다.
+ *     - allowStartIfComplete()
+ *          - 재시작 가능한 job 에서 Step 의 이전 성공 여부와 상관없이 항상 Step 을 실행하기 위한 설정
+ *          - 실행마다 유효성을 검증하는 Step 이나 사전 작업이 꼭 필요한 Step 등
+ *          - 기본적으로 Completed 상태를 가진 Step 은 Job 재시작 시 실행하지 않고 Skip 한다.
+ *          - allow-start-if-completed 가 true 로 설정된 step 은 항상 실행
  * </pre>
+ *
  */
 @Slf4j
 @RequiredArgsConstructor
-//@Configuration
-public class TaskletConfiguration {
+@Configuration
+public class TaskletExtraConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -42,7 +41,7 @@ public class TaskletConfiguration {
     @Bean
     public Job batchJob1() {
         return jobBuilderFactory.get("batchJob1")
-            .incrementer(new RunIdIncrementer())
+//            .incrementer(new RunIdIncrementer())
             .start(step1())
             .next(step2())
             .build();
@@ -55,13 +54,20 @@ public class TaskletConfiguration {
                 log.info("step1 was execute");
                 return RepeatStatus.FINISHED;
             })
+            .allowStartIfComplete(true)
             .build();
     }
 
     @Bean
     public Step step2() {
         return stepBuilderFactory.get("step2")
-            .tasklet(new CustomTasklet())
+            .tasklet((contribution, chunkContext) -> {
+                log.info("step2 was execute");
+                throw new RuntimeException("step2 failed.");
+//                return RepeatStatus.FINISHED;
+            })
+            .startLimit(3)
             .build();
     }
+
 }
