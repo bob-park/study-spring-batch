@@ -69,7 +69,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class TransitionFlowConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
