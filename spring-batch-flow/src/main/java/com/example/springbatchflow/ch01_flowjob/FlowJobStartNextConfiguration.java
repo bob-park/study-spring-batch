@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class FlowJobStartNextConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
