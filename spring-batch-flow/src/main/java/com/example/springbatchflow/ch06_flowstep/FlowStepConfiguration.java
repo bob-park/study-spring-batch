@@ -1,4 +1,4 @@
-package com.example.springbatchflow.ch05_simpleflow;
+package com.example.springbatchflow.ch06_flowstep;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,12 +14,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * SimpleFlow Example
+ * FlowStep
+ *
+ * <pre>
+ *  - Step 내에 Flow 를 할당하여 실행시키는 도메인 객체
+ *  - FlowStep 의 BatchStatus 와 ExitStatus 은 Flow 의 최종 상태값에 따라 결정된다.
+ * </pre>
  */
 @Slf4j
 @RequiredArgsConstructor
-//@Configuration
-public class SimpleFlowExamConfiguration {
+@Configuration
+public class FlowStepConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -28,11 +33,16 @@ public class SimpleFlowExamConfiguration {
     public Job batchJob1() {
         return jobBuilderFactory.get("batchJob1")
             .incrementer(new RunIdIncrementer())
-            .start(flow1())
-            .on("COMPLETED").to(flow2())
-            .from(flow1()).on("FAILED").to(flow3())
-            .end()
+            .start(flowStep1())
+            .next(step3())
             .build();
+    }
+
+    @Bean
+    public Step flowStep1() {
+        return stepBuilderFactory.get("flowStep1")
+            .flow(flow1()) // Step 내에서 실행 될 Flow 설정, FlowStepBuilder 반환
+            .build(); // FlowStep 객체 생성
     }
 
     @Bean
@@ -46,33 +56,11 @@ public class SimpleFlowExamConfiguration {
     }
 
     @Bean
-    public Flow flow2() {
-        FlowBuilder<Flow> builder = new FlowBuilder<>("flow2");
-        builder.start(flow3())
-            .next(step5())
-            .next(step6())
-            .end();
-
-        return builder.build();
-    }
-
-    @Bean
-    public Flow flow3() {
-        FlowBuilder<Flow> builder = new FlowBuilder<>("flow3");
-        builder.start(step3())
-            .next(step4())
-            .end();
-
-        return builder.build();
-    }
-
-    @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
             .tasklet((contribution, chunkContext) -> {
                 log.info(" >> step1 was executed");
-                throw new RuntimeException("step1 was failed.");
-//                return RepeatStatus.FINISHED;
+                return RepeatStatus.FINISHED;
             })
             .build();
     }
@@ -82,7 +70,8 @@ public class SimpleFlowExamConfiguration {
         return stepBuilderFactory.get("step2")
             .tasklet((contribution, chunkContext) -> {
                 log.info(" >> step2 was executed");
-                return RepeatStatus.FINISHED;
+                throw new RuntimeException("step2 was executed.");
+//                return RepeatStatus.FINISHED;
             })
             .build();
     }
@@ -92,36 +81,6 @@ public class SimpleFlowExamConfiguration {
         return stepBuilderFactory.get("step3")
             .tasklet((contribution, chunkContext) -> {
                 log.info(" >> step3 was executed");
-                return RepeatStatus.FINISHED;
-            })
-            .build();
-    }
-
-    @Bean
-    public Step step4() {
-        return stepBuilderFactory.get("step4")
-            .tasklet((contribution, chunkContext) -> {
-                log.info(" >> step4 was executed");
-                return RepeatStatus.FINISHED;
-            })
-            .build();
-    }
-
-    @Bean
-    public Step step5() {
-        return stepBuilderFactory.get("step5")
-            .tasklet((contribution, chunkContext) -> {
-                log.info(" >> step5 was executed");
-                return RepeatStatus.FINISHED;
-            })
-            .build();
-    }
-
-    @Bean
-    public Step step6() {
-        return stepBuilderFactory.get("step6")
-            .tasklet((contribution, chunkContext) -> {
-                log.info(" >> step6 was executed");
                 return RepeatStatus.FINISHED;
             })
             .build();
