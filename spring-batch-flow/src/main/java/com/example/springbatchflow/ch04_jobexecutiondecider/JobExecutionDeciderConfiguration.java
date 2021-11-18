@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class JobExecutionDeciderConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
