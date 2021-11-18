@@ -8,24 +8,18 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * SimpleFlow
- *
- * <pre>
- *     - Spring Batch 에서 제공하는 Flow 의 구현체로서 각 요소(Step, Flow, JobExecutionDecider) 들을 담고 있는 State 를 실행시키는 Domain 객체
- *     - FlowBuilder 를 사용해서 생성하며, Transition 과 조합하여 여러개의 Flow 및 중첩 Flow 를 만들어 Job 을 구성할 수 있다.
- *
- *
- * </pre>
+ * SimpleFlow Example
  */
 @Slf4j
 @RequiredArgsConstructor
-//@Configuration
-public class SimpleFlowConfiguration {
+@Configuration
+public class SimpleFlowExamConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -33,8 +27,10 @@ public class SimpleFlowConfiguration {
     @Bean
     public Job batchJob1() {
         return jobBuilderFactory.get("batchJob1")
+            .incrementer(new RunIdIncrementer())
             .start(flow1())
-            .next(step3())
+            .on("COMPLETED").to(flow2())
+            .from(flow1()).on("FAILED").to(flow3())
             .end()
             .build();
     }
@@ -50,11 +46,33 @@ public class SimpleFlowConfiguration {
     }
 
     @Bean
+    public Flow flow2() {
+        FlowBuilder<Flow> builder = new FlowBuilder<>("flow2");
+        builder.start(flow3())
+            .next(step5())
+            .next(step6())
+            .end();
+
+        return builder.build();
+    }
+
+    @Bean
+    public Flow flow3() {
+        FlowBuilder<Flow> builder = new FlowBuilder<>("flow3");
+        builder.start(step3())
+            .next(step4())
+            .end();
+
+        return builder.build();
+    }
+
+    @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
             .tasklet((contribution, chunkContext) -> {
                 log.info(" >> step1 was executed");
-                return RepeatStatus.FINISHED;
+                throw new RuntimeException("step1 was failed.");
+//                return RepeatStatus.FINISHED;
             })
             .build();
     }
@@ -74,6 +92,36 @@ public class SimpleFlowConfiguration {
         return stepBuilderFactory.get("step3")
             .tasklet((contribution, chunkContext) -> {
                 log.info(" >> step3 was executed");
+                return RepeatStatus.FINISHED;
+            })
+            .build();
+    }
+
+    @Bean
+    public Step step4() {
+        return stepBuilderFactory.get("step4")
+            .tasklet((contribution, chunkContext) -> {
+                log.info(" >> step4 was executed");
+                return RepeatStatus.FINISHED;
+            })
+            .build();
+    }
+
+    @Bean
+    public Step step5() {
+        return stepBuilderFactory.get("step5")
+            .tasklet((contribution, chunkContext) -> {
+                log.info(" >> step5 was executed");
+                return RepeatStatus.FINISHED;
+            })
+            .build();
+    }
+
+    @Bean
+    public Step step6() {
+        return stepBuilderFactory.get("step6")
+            .tasklet((contribution, chunkContext) -> {
+                log.info(" >> step6 was executed");
                 return RepeatStatus.FINISHED;
             })
             .build();
