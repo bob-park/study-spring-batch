@@ -10,27 +10,26 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.support.ListItemReader;
+import org.springframework.batch.repeat.CompletionPolicy;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Chunk
+ * ChunkOrientedTasklet
  *
  * <pre>
- *     - Chunk 란 여러개의 Item 을 묶은 하나의 덩어리, 블록을 의미
- *     - 한번에 하나씩 Item 을 입력받아 Chunk 단위의 덩어리로 만든 후 Chunk 단위로 트랜잭션을 처리함, 즉, Chunk 단위의 Commit 과 Rollback 이 이루어짐
- *     - 일반적으로 대용량 데이터를 한번에 처리하는 것이 아닌, Chunk 단위로 쪼개서 더이상 처리할 데이터가 없을 때까지 반복해서 입출력하는데 사용됨
- *
- *     - Chunk<I> vs Chunk<O>
- *         - Chunk<I> 는 ItemReader 로 읽은 하나의 아이템을 Chunk 에서 정한 개수 만큼 반복해서 저장하는 타입
- *         - Chunk<O> 는 ItemReader 로부터 전달받은 Chunk<I> 를 참조해서 ItemProcessor 에서 적절하게 가공, 필터링한 다음 ItemWriter 에 전달하는 타입
+ *     - ChunkOrientedTasklet 은 Spring Batch 에서 제공하는 Tasklet 의 구현체로써, Chunk 지향 프로세싱을 담당하는 Domain 객체
+ *     - ItemReader, ItemWriter, ItemProcessor 를 사용해 Chunk 기반의 데이터 입출력 처리를 담당한다.
+ *     - TaskletStep 에 의해서 반복적으로 실행되며, ChunkOrientedTasklet 이 실행될 때마다 매번 새로운 Transaction 이 생성되어 처리가 이루어진다.
+ *     - Exception 발생 시, 해당 Chunk 는 Rollback 되며, 이전에 Commit 한 Chunk 는 완료 상태가 유지된다.
+ *     - 내부적으로 ItemReader 를 핸들링하는 ChunkProvider 와 ItemProcessor, ItemWriter 를 핸들링하는 ChunkProcessor 타입의 구현체를 가진다.
  * </pre>
  */
 @Slf4j
 @RequiredArgsConstructor
-//@Configuration
-public class ChunkConfiguration {
+@Configuration
+public class ChunkOrientedTaskletConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -47,20 +46,24 @@ public class ChunkConfiguration {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-            .<String, String>chunk(5)
-            // 전체 item 읽기 - data 필터링
+            .<String, String>chunk(2) // chunk size 설정, chunk size 는 commit interval 을 의미함, input, output generic type 설정
+//            .<String, String>chunk(CompletionPolicy) // Chunk 프로세스를 완료하기 위한 정책 설정 class 지정
+            // Source 로부터 item 을 reader 하거나 가져오는 ItemReader 구현체 설정
             .reader(
                 new ListItemReader<>(Arrays.asList("item1", "item2", "item3", "item4", "item5")))
-            // 개별 item 처리 - data 가공
+            // item 변형, 가공, 필터링 하기 위한 ItemProcessor 구현체 설정
             .processor((ItemProcessor<String, String>) item -> {
                 log.info("item={}", item);
-                return "my " + item;
+                return "my_" + item;
             })
-            // 전체 item 쓰기
+            // item 을 목적지에 쓰거나 보내기 위한 ItemWriter 구현체 설정
             .writer(items -> {
                 Thread.sleep(300);
                 log.info("items={}", items);
             })
+//            .stream(ItemStream) // 재시작 데이터를 관리하는 callback 에 대한 Stream 등록
+//            .readerIsTransactionalQueue() // item 이 JMS, Message Queue Server 와 같은 트랜잭션 외부에서 읽혀지고 캐시할 것인지 여부, default: false
+//            .listener(ChunkListener) // Chunk Process 가 진행되는 특정 시점에 Callback 제공받도록 ChunkListener 설정
             .build();
     }
 
