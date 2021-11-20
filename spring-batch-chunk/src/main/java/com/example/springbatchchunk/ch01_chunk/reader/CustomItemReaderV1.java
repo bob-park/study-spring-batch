@@ -8,11 +8,11 @@ import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
-public class CustomItemReader implements ItemReader<Customer> {
+public class CustomItemReaderV1 implements ItemReader<Customer> {
 
     private List<Customer> list;
 
-    public CustomItemReader(List<Customer> list) {
+    public CustomItemReaderV1(List<Customer> list) {
         this.list = new ArrayList<>(list);
     }
 

@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemWriter;
 
 @Slf4j
-public class CustomItemWriter implements ItemWriter<Customer> {
+public class CustomItemWriterV1 implements ItemWriter<Customer> {
 
     @Override
     public void write(List<? extends Customer> items) throws Exception {

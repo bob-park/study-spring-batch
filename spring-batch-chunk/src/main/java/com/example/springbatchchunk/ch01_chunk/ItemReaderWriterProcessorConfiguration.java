@@ -2,8 +2,8 @@ package com.example.springbatchchunk.ch01_chunk;
 
 import com.example.springbatchchunk.ch01_chunk.model.Customer;
 import com.example.springbatchchunk.ch01_chunk.processor.CustomItemProcessor;
-import com.example.springbatchchunk.ch01_chunk.reader.CustomItemReader;
-import com.example.springbatchchunk.ch01_chunk.writer.CustomItemWriter;
+import com.example.springbatchchunk.ch01_chunk.reader.CustomItemReaderV1;
+import com.example.springbatchchunk.ch01_chunk.writer.CustomItemWriterV1;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,6 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * ItemReader / ItemWriter / ItemProcessor
@@ -89,7 +88,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class ItemReaderWriterProcessorConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
@@ -127,7 +126,7 @@ public class ItemReaderWriterProcessorConfiguration {
 
     @Bean
     public ItemReader<Customer> itemReader() {
-        return new CustomItemReader(Arrays.asList(
+        return new CustomItemReaderV1(Arrays.asList(
             new Customer("user1"),
             new Customer("user2"),
             new Customer("user3")
@@ -141,7 +140,7 @@ public class ItemReaderWriterProcessorConfiguration {
 
     @Bean
     public ItemWriter<Customer> itemWriter() {
-        return new CustomItemWriter();
+        return new CustomItemWriterV1();
     }
 
 
