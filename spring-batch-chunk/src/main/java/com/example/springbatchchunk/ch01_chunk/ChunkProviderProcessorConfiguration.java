@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class ChunkProviderProcessorConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
