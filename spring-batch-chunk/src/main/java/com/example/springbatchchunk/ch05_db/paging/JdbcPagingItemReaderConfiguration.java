@@ -38,7 +38,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class JdbcPagingItemReaderConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
