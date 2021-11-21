@@ -28,7 +28,7 @@ import org.springframework.core.io.ClassPathResource;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class JsonItemReaderConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;

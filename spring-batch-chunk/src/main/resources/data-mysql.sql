@@ -1,0 +1,10 @@
+INSERT INTO study_batch.customer (id, firstName, lastName, birthDate) VALUES (1, 'AA', 'AA', '1952-08-16 12:34:56');
+INSERT INTO study_batch.customer (id, firstName, lastName, birthDate) VALUES (2, 'BB', 'BB', '1952-08-16 12:34:56');
+INSERT INTO study_batch.customer (id, firstName, lastName, birthDate) VALUES (3, 'CC', 'CC', '1952-08-16 12:34:56');
+INSERT INTO study_batch.customer (id, firstName, lastName, birthDate) VALUES (4, 'DD', 'DD', '1952-08-16 12:34:56');
+INSERT INTO study_batch.customer (id, firstName, lastName, birthDate) VALUES (5, 'EE', 'EE', '1952-08-16 12:34:56');
+INSERT INTO study_batch.customer (id, firstName, lastName, birthDate) VALUES (6, 'FF', 'FF', '1952-08-16 12:34:56');
+INSERT INTO study_batch.customer (id, firstName, lastName, birthDate) VALUES (7, 'GG', 'GG', '1952-08-16 12:34:56');
+INSERT INTO study_batch.customer (id, firstName, lastName, birthDate) VALUES (8, 'HH', 'HH', '1952-08-16 12:34:56');
+INSERT INTO study_batch.customer (id, firstName, lastName, birthDate) VALUES (9, 'II', 'II', '1952-08-16 12:34:56');
+INSERT INTO study_batch.customer (id, firstName, lastName, birthDate) VALUES (10, 'J',  'J', '1952-08-16 12:34:56');
