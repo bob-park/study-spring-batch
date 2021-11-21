@@ -1,4 +1,4 @@
-package com.example.springbatchchunk.ch02_itemreader.flatfile;
+package com.example.springbatchchunk.ch02_flatfileitemreader.flatfile;
 
 import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.mapping.FieldSetMapper;

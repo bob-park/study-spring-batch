@@ -1,8 +1,6 @@
-package com.example.springbatchchunk.ch02_itemreader;
+package com.example.springbatchchunk.ch02_flatfileitemreader;
 
-import com.example.springbatchchunk.ch02_itemreader.flatfile.CustomerFieldSetMapper;
-import com.example.springbatchchunk.ch02_itemreader.flatfile.DefaultLineMapper;
-import com.example.springbatchchunk.ch02_itemreader.model.Customer;
+import com.example.springbatchchunk.ch02_flatfileitemreader.model.Customer;
 import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,10 +12,8 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
-import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 /**

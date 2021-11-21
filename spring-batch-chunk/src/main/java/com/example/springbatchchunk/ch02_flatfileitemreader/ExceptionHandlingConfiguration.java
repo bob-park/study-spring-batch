@@ -1,6 +1,6 @@
-package com.example.springbatchchunk.ch02_itemreader;
+package com.example.springbatchchunk.ch02_flatfileitemreader;
 
-import com.example.springbatchchunk.ch02_itemreader.model.Customer;
+import com.example.springbatchchunk.ch02_flatfileitemreader.model.Customer;
 import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,22 +17,19 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
 
 /**
- * FixedLengthLineTokenizer
+ * Exception Handling
  *
  * <pre>
- *      - 한개 라인의 String 을 사용자가 설정한 고정길이 기준으로 나누어 토큰화 하는 방식
- *      - 범위는 문자열 형식으로 설정할 수 있다.
- *          - "1-4" 또는 "1-3,4-6,7", "1-2,4-5,7-10"
- *          - 마지막 범위가 열려 있으면, 나머지 행이 해당 열로 읽혀진다.
+ *      - 라인을 읽거나 토큰화할때 발생하는 Parsing 예외를 처리할 수 있도록 예외 계층 제공
+ *      - 토큰화 검증을 엄격하게 적용하지 않도록 설정하면 Parsing 예외가 발생하지 않도록 할 수 있다.
  * </pre>
  */
 @Slf4j
 @RequiredArgsConstructor
 @Configuration
-public class FixedLengthTokenizerConfiguration {
+public class ExceptionHandlingConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;

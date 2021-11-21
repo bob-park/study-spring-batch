@@ -1,4 +1,4 @@
-package com.example.springbatchchunk.ch02_itemreader.model;
+package com.example.springbatchchunk.ch02_flatfileitemreader.model;
 
 import lombok.Data;
 

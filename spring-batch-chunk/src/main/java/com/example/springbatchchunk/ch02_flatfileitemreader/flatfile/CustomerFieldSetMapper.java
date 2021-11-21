@@ -1,6 +1,6 @@
-package com.example.springbatchchunk.ch02_itemreader.flatfile;
+package com.example.springbatchchunk.ch02_flatfileitemreader.flatfile;
 
-import com.example.springbatchchunk.ch02_itemreader.model.Customer;
+import com.example.springbatchchunk.ch02_flatfileitemreader.model.Customer;
 import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.FieldSet;
 import org.springframework.validation.BindException;
