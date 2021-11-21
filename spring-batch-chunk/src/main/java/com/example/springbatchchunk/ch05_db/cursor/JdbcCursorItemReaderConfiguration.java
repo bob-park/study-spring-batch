@@ -1,4 +1,4 @@
-package com.example.springbatchchunk.ch05_db;
+package com.example.springbatchchunk.ch05_db.cursor;
 
 import com.example.springbatchchunk.ch05_db.model.Customer;
 import javax.sql.DataSource;
