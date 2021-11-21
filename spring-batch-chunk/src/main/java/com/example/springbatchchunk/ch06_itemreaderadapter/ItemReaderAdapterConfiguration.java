@@ -1,8 +1,6 @@
-package com.example.springbatchchunk.ch05_db.paging;
+package com.example.springbatchchunk.ch06_itemreaderadapter;
 
-import com.example.springbatchchunk.ch05_db.entity.CustomerEntity;
-import com.example.springbatchchunk.ch05_db.entity.Member;
-import javax.persistence.EntityManagerFactory;
+import com.example.springbatchchunk.ch06_itemreaderadapter.service.CustomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -11,27 +9,25 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
+import org.springframework.batch.item.adapter.ItemReaderAdapter;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * JpaPagingItemReader
+ * ItemReaderAdapter
  *
  * <pre>
- *     - Paging 기반의 JPA 구현체로써 EntityManagerFactory 객체가 필요하며 Query 는 JPQL 을 사용한다.
+ *     - Batch Job 아넹서 이미 있는 Dao 나 다른 서비스를 ItemReader 안에서 사용하고자 할 때 위임 역할을 한다.
  * </pre>
  */
 @Slf4j
 @RequiredArgsConstructor
-//@Configuration
-public class JpaPagingItemReaderConfiguration {
+@Configuration
+public class ItemReaderAdapterConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-
-    private final EntityManagerFactory entityManagerFactory;
 
     @Bean
     public Job batchJob1() {
@@ -45,7 +41,7 @@ public class JpaPagingItemReaderConfiguration {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-            .<Member, Member>chunk(2)
+            .<String, String>chunk(2)
             .reader(itemReader())
             .writer(items -> log.info("items={}", items))
             .build();
@@ -62,13 +58,18 @@ public class JpaPagingItemReaderConfiguration {
     }
 
     @Bean
-    public ItemReader<Member> itemReader() {
-        return new JpaPagingItemReaderBuilder<Member>()
-            .name("jpa-paging-reader")
-            .entityManagerFactory(entityManagerFactory)
-            .pageSize(2) // 페이지 크기 설정
-            .queryString("select m from Member m join fetch m.address") // ItemReader 가 조회할 때 사용할 JPQL 문장 설정
-//            .parameterValues(parameters)
-            .build();
+    public ItemReader<String> itemReader() {
+
+        ItemReaderAdapter<String> reader = new ItemReaderAdapter<>();
+
+        reader.setTargetObject(customService());
+        reader.setTargetMethod("customRead");
+
+        return reader;
+    }
+
+    @Bean
+    public CustomService customService(){
+        return new CustomService();
     }
 }
