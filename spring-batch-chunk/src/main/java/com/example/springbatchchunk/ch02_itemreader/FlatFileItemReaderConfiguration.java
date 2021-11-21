@@ -53,7 +53,7 @@ import org.springframework.core.io.ClassPathResource;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class FlatFileItemReaderConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
