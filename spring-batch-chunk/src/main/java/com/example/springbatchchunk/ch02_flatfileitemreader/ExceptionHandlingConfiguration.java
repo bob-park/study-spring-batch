@@ -33,7 +33,7 @@ import org.springframework.core.io.ClassPathResource;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class ExceptionHandlingConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
