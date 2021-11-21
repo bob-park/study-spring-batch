@@ -1,7 +1,5 @@
 package com.example.springbatchchunk.ch02_itemreader;
 
-import com.example.springbatchchunk.ch02_itemreader.flatfile.CustomerFieldSetMapper;
-import com.example.springbatchchunk.ch02_itemreader.flatfile.DefaultLineMapper;
 import com.example.springbatchchunk.ch02_itemreader.model.Customer;
 import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
@@ -14,26 +12,27 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
-import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.batch.item.file.transform.Range;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 
 /**
- * DelimitedLineTokenizer
+ * FixedLengthLineTokenizer
  *
  * <pre>
- *      - DelimitedLineTokenizer
- *          - 한 개 라인의 String 을 구분자 기준으로 나누어 토큰화 하는 방식
- *
- *
+ *      - 한개 라인의 String 을 사용자가 설정한 고정길이 기준으로 나누어 토큰화 하는 방식
+ *      - 범위는 문자열 형식으로 설정할 수 있다.
+ *          - "1-4" 또는 "1-3,4-6,7", "1-2,4-5,7-10"
+ *          - 마지막 범위가 열려 있으면, 나머지 행이 해당 열로 읽혀진다.
  * </pre>
  */
 @Slf4j
 @RequiredArgsConstructor
-//@Configuration
-public class DelimitedLineTokenizerConfiguration {
+@Configuration
+public class FixedLengthTokenizerConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -70,13 +69,16 @@ public class DelimitedLineTokenizerConfiguration {
     public ItemReader<Customer> itemReader() {
 
         return new FlatFileItemReaderBuilder<Customer>()
-            .name("customer")
-            .resource(new ClassPathResource("/customer.csv"))
+            .name("flatFile")
+            .resource(new ClassPathResource("/customer.txt"))
             .encoding(StandardCharsets.UTF_8.name())
             .fieldSetMapper(new BeanWrapperFieldSetMapper<>())
             .targetType(Customer.class)
             .linesToSkip(1)
-            .delimited().delimiter(",")
+            .fixedLength()
+            .addColumns(new Range(1, 5))
+            .addColumns(new Range(6, 7))
+            .addColumns(new Range(8))
             .names("name", "age", "year")
             .build();
     }
