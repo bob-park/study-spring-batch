@@ -62,7 +62,7 @@ import org.springframework.oxm.xstream.XStreamMarshaller;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class StaxEventItemReaderConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
