@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class JpaCursorItemReaderConfiguration {
 
     private static final int CHUNK_SIZE = 2;
