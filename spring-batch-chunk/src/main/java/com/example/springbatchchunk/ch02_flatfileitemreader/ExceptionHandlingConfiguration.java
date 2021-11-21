@@ -24,6 +24,11 @@ import org.springframework.core.io.ClassPathResource;
  * <pre>
  *      - 라인을 읽거나 토큰화할때 발생하는 Parsing 예외를 처리할 수 있도록 예외 계층 제공
  *      - 토큰화 검증을 엄격하게 적용하지 않도록 설정하면 Parsing 예외가 발생하지 않도록 할 수 있다.
+ *
+ *      - 토큰화 검증 기준 설정
+ *          - LineTokenizer 의 Strict 속성을 false 로 설정하게 되면, Tokenizer 가 라인 길이를 검증하지 않는다.
+ *          - Tokenizer 가 라인 길이나 컬럼명을 검증하지 않는 경우 예외가 발생하지 않는다.
+ *          - FieldSet 은 성공적으로 리턴이 되며, 두번째 범위값은 빈 토큰을 가지게 된다.
  * </pre>
  */
 @Slf4j
@@ -73,9 +78,10 @@ public class ExceptionHandlingConfiguration {
             .targetType(Customer.class)
             .linesToSkip(1)
             .fixedLength()
+            .strict(false) // false 설정 시 길이에 대한 토큰화 검증을 진행하지 않는다.
             .addColumns(new Range(1, 5))
             .addColumns(new Range(6, 7))
-            .addColumns(new Range(8))
+            .addColumns(new Range(8, 11))
             .names("name", "age", "year")
             .build();
     }
