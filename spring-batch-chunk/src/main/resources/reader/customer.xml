@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<customerV1s>
+  <customer>
+    <id>1</id>
+    <firstName>kim</firstName>
+    <lastName>kildong</lastName>
+  </customer>
+  <customer>
+    <id>2</id>
+    <firstName>lee</firstName>
+    <lastName>kildong</lastName>
+  </customer>
+</customerV1s>
