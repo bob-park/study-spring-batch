@@ -2,7 +2,6 @@ package com.example.springbatchchunk.writer.ch01_flatfileitemwriter;
 
 import com.example.springbatchchunk.writer.model.Customer;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,23 +16,13 @@ import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 
-/**
- * DelimitedLineAggregator & FormatterLineAggregator
- *
- * <pre>
- *     - DelimitedLineAggregator
- *          - 객체의 필드 사이에 구분자를 사입해서 한 문자열로 변환한다.
- *
- *      - FormatterLineAggregator
- *          - 객체의 필드를 사용자가 설정한 Formatter 구문을 통해 문자열로 변환한다.
- * </pre>
- */
 @Slf4j
 @RequiredArgsConstructor
-//@Configuration
-public class DelimitedLineAggregatorConfiguration {
+@Configuration
+public class FormatterLineAggregatorConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -75,17 +64,18 @@ public class DelimitedLineAggregatorConfiguration {
             new Customer(3L, "hong gill dong3", 3)
         );
 
-        return new ListItemReader<>(Collections.emptyList());
+        return new ListItemReader<>(customers);
+//        return new ListItemReader<>(Collections.emptyList());
     }
 
     @Bean
     public ItemWriter<Customer> itemWriter() {
         return new FlatFileItemWriterBuilder<Customer>()
             .name("flat-file-writer")
-            .resource(new FileSystemResource("/Users/hwpark/Documents/study/spring-batch/spring-batch-chunk/src/main/resources/writer/customer.txt"))
-            .append(true)
-            .shouldDeleteIfEmpty(true)
-            .delimited().delimiter("|")
+            .resource(new FileSystemResource(
+                "/Users/hwpark/Documents/study/spring-batch/spring-batch-chunk/src/main/resources/writer/costumer.txt"))
+            .formatted()
+            .format("%-2d%-16s%-2d")
             .names("id", "name", "age")
             .build();
     }
