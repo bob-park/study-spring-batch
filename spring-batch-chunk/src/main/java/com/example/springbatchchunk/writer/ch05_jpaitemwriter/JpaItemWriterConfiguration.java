@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class JpaItemWriterConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
