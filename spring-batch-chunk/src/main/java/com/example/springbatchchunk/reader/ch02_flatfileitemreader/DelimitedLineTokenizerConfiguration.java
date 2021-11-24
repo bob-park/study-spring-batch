@@ -67,7 +67,7 @@ public class DelimitedLineTokenizerConfiguration {
 
         return new FlatFileItemReaderBuilder<Customer>()
             .name("customer")
-            .resource(new ClassPathResource("/customer.csv"))
+            .resource(new ClassPathResource("/reader/customer.csv"))
             .encoding(StandardCharsets.UTF_8.name())
             .fieldSetMapper(new BeanWrapperFieldSetMapper<>())
             .targetType(Customer.class)

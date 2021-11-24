@@ -68,7 +68,7 @@ public class FixedLengthTokenizerConfiguration {
 
         return new FlatFileItemReaderBuilder<Customer>()
             .name("flatFile")
-            .resource(new ClassPathResource("/customer.txt"))
+            .resource(new ClassPathResource("/reader/customer.txt"))
             .encoding(StandardCharsets.UTF_8.name())
             .fieldSetMapper(new BeanWrapperFieldSetMapper<>())
             .targetType(Customer.class)

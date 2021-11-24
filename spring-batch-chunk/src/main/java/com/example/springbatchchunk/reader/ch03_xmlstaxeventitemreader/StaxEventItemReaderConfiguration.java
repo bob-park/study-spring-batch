@@ -100,7 +100,7 @@ public class StaxEventItemReaderConfiguration {
 
         return new StaxEventItemReaderBuilder<Customer>()
             .name("stax-item-reader")
-            .resource(new ClassPathResource("/customer.xml"))
+            .resource(new ClassPathResource("/reader/customer.xml"))
             .addFragmentRootElements("customer")
             .unmarshaller(itemUnmarshaller())
             .build();

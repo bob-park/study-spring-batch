@@ -65,7 +65,7 @@ public class JsonItemReaderConfiguration {
     public ItemReader<Customer> itemReader() {
         return new JsonItemReaderBuilder<Customer>()
             .name("json-item-reader")
-            .resource(new ClassPathResource("/customer.json"))
+            .resource(new ClassPathResource("/reader/customer.json"))
             .jsonObjectReader(new JacksonJsonObjectReader<>(Customer.class))
             .build();
     }

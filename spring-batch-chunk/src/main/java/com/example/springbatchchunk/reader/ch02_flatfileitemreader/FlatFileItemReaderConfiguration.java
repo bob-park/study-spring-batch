@@ -94,7 +94,7 @@ public class FlatFileItemReaderConfiguration {
 
         return new FlatFileItemReaderBuilder<Customer>()
             .name("customer") // 이름 설정, ExecutionContext 내에서 구분하기 위한 key 로 저장
-            .resource(new ClassPathResource("/customer.csv")) // 읽어야할 리소스 설정
+            .resource(new ClassPathResource("/reader/customer.csv")) // 읽어야할 리소스 설정
 //            .delimited().delimiter("|") // 파일 구분자를 기준으로 파일을 읽어들이는 설정
 //            .fixedLength() // 파일의 고정길이를 기준으로 파일을 읽어들이는 설정
 //            .addColumns(Range...) // 고정길이 범위를 정하는 설정
