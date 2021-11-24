@@ -1,6 +1,6 @@
 package com.example.springbatchchunk.writer.ch03_jsonfilewriter;
 
-import com.example.springbatchchunk.writer.model.Customer;
+import com.example.springbatchchunk.writer.model.CustomerV1;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,6 @@ import org.springframework.batch.item.json.builder.JsonFileItemWriterBuilder;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -29,7 +28,7 @@ import org.springframework.core.io.FileSystemResource;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class JsonFileItemWriterConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
@@ -47,7 +46,7 @@ public class JsonFileItemWriterConfiguration {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-            .<Customer, Customer>chunk(5)
+            .<CustomerV1, CustomerV1>chunk(5)
             .reader(itemReader())
             .writer(itemWriter())
             .build();
@@ -64,21 +63,21 @@ public class JsonFileItemWriterConfiguration {
     }
 
     @Bean
-    public ItemReader<Customer> itemReader() {
+    public ItemReader<CustomerV1> itemReader() {
 
-        List<Customer> customers = Arrays.asList(
-            new Customer(1L, "hong gill dong1", 1),
-            new Customer(2L, "hong gill dong2", 2),
-            new Customer(3L, "hong gill dong3", 3)
+        List<CustomerV1> customerV1s = Arrays.asList(
+            new CustomerV1(1L, "hong gill dong1", 1),
+            new CustomerV1(2L, "hong gill dong2", 2),
+            new CustomerV1(3L, "hong gill dong3", 3)
         );
 
-        return new ListItemReader<>(customers);
+        return new ListItemReader<>(customerV1s);
 //        return new ListItemReader<>(Collections.emptyList());
     }
 
     @Bean
-    public ItemWriter<Customer> itemWriter() {
-        return new JsonFileItemWriterBuilder<Customer>()
+    public ItemWriter<CustomerV1> itemWriter() {
+        return new JsonFileItemWriterBuilder<CustomerV1>()
             .name("json-file-writer")
             .resource(new FileSystemResource("/Users/hwpark/Documents/study/spring-batch/spring-batch-chunk/src/main/resources/writer/customer.json"))
 //            .append(false)

@@ -1,6 +1,6 @@
 package com.example.springbatchchunk.writer.ch01_flatfileitemwriter;
 
-import com.example.springbatchchunk.writer.model.Customer;
+import com.example.springbatchchunk.writer.model.CustomerV1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -78,8 +78,8 @@ public class FlatFileItemWriterConfiguration {
     }
 
     @Bean
-    public ItemWriter<Customer> itemWriter(){
-        return new FlatFileItemWriterBuilder<Customer>()
+    public ItemWriter<CustomerV1> itemWriter(){
+        return new FlatFileItemWriterBuilder<CustomerV1>()
             .name("flat-file-writer")
 //            .resource(resource) // 쓰기할 리소스 설정
 //            .lineAggregator(lineAggregator) // 객체를 String 으로 변환하는 LineAggregator 객체 설정

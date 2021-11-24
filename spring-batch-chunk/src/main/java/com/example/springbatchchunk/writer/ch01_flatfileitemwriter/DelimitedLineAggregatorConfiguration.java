@@ -1,6 +1,6 @@
 package com.example.springbatchchunk.writer.ch01_flatfileitemwriter;
 
-import com.example.springbatchchunk.writer.model.Customer;
+import com.example.springbatchchunk.writer.model.CustomerV1;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -50,7 +50,7 @@ public class DelimitedLineAggregatorConfiguration {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-            .<Customer, Customer>chunk(5)
+            .<CustomerV1, CustomerV1>chunk(5)
             .reader(itemReader())
             .writer(itemWriter())
             .build();
@@ -67,20 +67,20 @@ public class DelimitedLineAggregatorConfiguration {
     }
 
     @Bean
-    public ItemReader<Customer> itemReader() {
+    public ItemReader<CustomerV1> itemReader() {
 
-        List<Customer> customers = Arrays.asList(
-            new Customer(1L, "hong gill dong1", 1),
-            new Customer(2L, "hong gill dong2", 2),
-            new Customer(3L, "hong gill dong3", 3)
+        List<CustomerV1> customerV1s = Arrays.asList(
+            new CustomerV1(1L, "hong gill dong1", 1),
+            new CustomerV1(2L, "hong gill dong2", 2),
+            new CustomerV1(3L, "hong gill dong3", 3)
         );
 
         return new ListItemReader<>(Collections.emptyList());
     }
 
     @Bean
-    public ItemWriter<Customer> itemWriter() {
-        return new FlatFileItemWriterBuilder<Customer>()
+    public ItemWriter<CustomerV1> itemWriter() {
+        return new FlatFileItemWriterBuilder<CustomerV1>()
             .name("flat-file-writer")
             .resource(new FileSystemResource("/Users/hwpark/Documents/study/spring-batch/spring-batch-chunk/src/main/resources/writer/customer.txt"))
             .append(true)
