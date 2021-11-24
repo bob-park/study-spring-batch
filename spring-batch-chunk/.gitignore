@@ -36,3 +36,5 @@ out/
 ### VS Code ###
 .vscode/
 /src/main/resources/writer/costumer.txt
+/src/main/resources/writer/customer.xml
+/src/main/resources/writer/customer.json
