@@ -1,9 +1,11 @@
-package com.example.springbatchchunk.writer.ch04_jdbcbatchitemwriter;
+package com.example.springbatchchunk.writer.ch05_jpaitemwriter;
 
+import com.example.springbatchchunk.reader.ch05_db.entity.CustomerEntity;
+import com.example.springbatchchunk.writer.ch05_jpaitemwriter.processor.CustomItemProcessor;
 import com.example.springbatchchunk.writer.model.CustomerV2;
 import java.util.Arrays;
 import java.util.List;
-import javax.sql.DataSource;
+import javax.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -11,32 +13,33 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
+import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * JdbcBatchItemWriter
- *
+ * JpaItemWriter
+ * 
  * <pre>
- *     - JdbcCursorItemReader 설정과 마찬가지로 datasource 를 지정하고, sql 속성이 실행할 쿼리를 설정
- *     - JDBC 의 Batch 기능을 사용하여, bulk insert/update/delete 방식으로 처리
- *     - 단건 처리가 아닌 일괄처리이기 때문에 성능에 이점을 가진다.
+ *     - JPA Entity 기반으로 데이터를 처리하며 EntityManagerFactory 를 주입받아 사용한다.
+ *     - Entity 를 하나씩 Chunk 크기 만큼 insert 혹은 update merge 한 다음 flush 한다.
+ *     - ItemReader 나 ItemProcessor 로부터 Item 을 전달받을 때 Entity Class Type 으로 받아야 한다.
  * </pre>
  */
 @Slf4j
 @RequiredArgsConstructor
-//@Configuration
-public class JdbcBatchItemWriterConfiguration {
+@Configuration
+public class JpaItemWriterConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-
-    private final DataSource dataSource;
+    
+    private final EntityManagerFactory entityManagerFactory;
 
     @Bean
     public Job batchJob1() {
@@ -50,8 +53,9 @@ public class JdbcBatchItemWriterConfiguration {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-            .<CustomerV2, CustomerV2>chunk(5)
+            .<CustomerV2, CustomerEntity>chunk(5)
             .reader(itemReader())
+            .processor(itemProcessor())
             .writer(itemWriter())
             .build();
     }
@@ -80,13 +84,16 @@ public class JdbcBatchItemWriterConfiguration {
     }
 
     @Bean
-    public ItemWriter<CustomerV2> itemWriter() {
-        return new JdbcBatchItemWriterBuilder<CustomerV2>()
-            .dataSource(dataSource)
-            .sql("insert into customer values(:id, :firstName, :lastName, :birthDate)") // ItemWriter 가 사용할 쿼리 문장 설정
-//            .assertUpdates(true) // Transaction 이 후 적어도 하나의 항목이 행을 업데이터 또는 삭제하지 않을 경우 예외발생 여부를 설정함, default : true
-            .beanMapped() // POJO 기반으로 insert SQL 의 values 를 맵핑
-//            .columnMapped() // key, value 기반으로 insert SQL 의 values 를 맵핑
+    public ItemWriter<CustomerEntity> itemWriter() {
+        return new JpaItemWriterBuilder<CustomerEntity>()
+//            .usePersist(true) // Entity 를 persist() 할 것인지 여부 설정, false 이면 merge() 처리
+            .entityManagerFactory(entityManagerFactory)
             .build();
     }
+
+    @Bean
+    public ItemProcessor<CustomerV2, CustomerEntity> itemProcessor() {
+        return new CustomItemProcessor();
+    }
+
 }
