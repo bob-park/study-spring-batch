@@ -1,8 +1,10 @@
-package com.example.springbatchchunk.writer.ch01_flatfileitemwriter;
+package com.example.springbatchchunk.writer.ch02_xmlstaxeventitemwriter;
 
 import com.example.springbatchchunk.writer.model.Customer;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -12,17 +14,27 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
 import org.springframework.batch.item.support.ListItemReader;
+import org.springframework.batch.item.xml.builder.StaxEventItemWriterBuilder;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.oxm.Marshaller;
+import org.springframework.oxm.xstream.XStreamMarshaller;
 
+/**
+ * XML StaxEventItemWriter
+ *
+ * <pre>
+ *     - XML 쓰는 과정은 읽기 과정에 대칭적이다.
+ *     - StaxEventItemWriter 는 Resource, marshaller, rootTagName 이 필요하다.
+ * </pre>
+ */
 @Slf4j
 @RequiredArgsConstructor
-//@Configuration
-public class FormatterLineAggregatorConfiguration {
+@Configuration
+public class XmlStaxEventItemWriterConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -70,14 +82,34 @@ public class FormatterLineAggregatorConfiguration {
 
     @Bean
     public ItemWriter<Customer> itemWriter() {
-        return new FlatFileItemWriterBuilder<Customer>()
-            .name("flat-file-writer")
+        return new StaxEventItemWriterBuilder<Customer>()
+            .name("xml-stax-item-writer")
             .resource(new FileSystemResource(
-                "/Users/hwpark/Documents/study/spring-batch/spring-batch-chunk/src/main/resources/writer/costumer.txt"))
-            .formatted()
-            .format("%-2d%-16s%-2d")
-            .names("id", "name", "age")
+                "/Users/hwpark/Documents/study/spring-batch/spring-batch-chunk/src/main/resources/writer/customer.xml"))
+            .rootTagName("customers") // Element 의 root 가 될 이름 설정
+//            .overwriteOutput(true) // 파일이 존재한다면 덮어 쓸 것인지 설정
+            .marshaller(itemMarshaller()) // Marshaller 객체 설정
+//            .headerCallback(callback)
+//            .footerCallback(callback)
             .build();
+    }
+
+    @Bean
+    public Marshaller itemMarshaller() {
+
+        Map<String, Class<?>> aliases = new HashMap<>();
+
+        aliases.put("customer", Customer.class);
+        aliases.put("id", Long.class);
+        aliases.put("name", String.class);
+        aliases.put("age", Integer.class);
+
+        XStreamMarshaller marshaller = new XStreamMarshaller();
+
+        marshaller.setAliases(aliases);
+        marshaller.setSupportedClasses(Customer.class);
+
+        return marshaller;
     }
 
 }
