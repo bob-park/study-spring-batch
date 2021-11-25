@@ -19,7 +19,6 @@ import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.batch.item.support.builder.CompositeItemProcessorBuilder;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * CompositeItemProcessor
@@ -31,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class CompositeItemProcessorConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
