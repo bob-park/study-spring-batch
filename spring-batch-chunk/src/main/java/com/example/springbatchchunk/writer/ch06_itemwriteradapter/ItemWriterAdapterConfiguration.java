@@ -15,7 +15,6 @@ import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.batch.item.adapter.ItemWriterAdapter;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * ItemWriterAdapter
@@ -26,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class ItemWriterAdapterConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
