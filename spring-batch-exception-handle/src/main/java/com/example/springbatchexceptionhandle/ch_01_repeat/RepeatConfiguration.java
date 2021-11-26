@@ -17,7 +17,6 @@ import org.springframework.batch.repeat.exception.ExceptionHandler;
 import org.springframework.batch.repeat.exception.SimpleLimitExceptionHandler;
 import org.springframework.batch.repeat.support.RepeatTemplate;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * Repeat
@@ -46,7 +45,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class RepeatConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
