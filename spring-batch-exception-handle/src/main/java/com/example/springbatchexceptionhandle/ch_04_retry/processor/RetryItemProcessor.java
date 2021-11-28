@@ -10,10 +10,12 @@ public class RetryItemProcessor implements ItemProcessor<String, String> {
     @Override
     public String process(String item) throws Exception {
 
-        cnt++;
+        if (item.equals("2") || item.equals("3")) {
+            cnt++;
 
-        throw new RetryableException("Retry : " + cnt);
+            throw new RetryableException("failed cnt : " + cnt);
+        }
 
-//        return null;
+        return item;
     }
 }
