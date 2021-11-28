@@ -1,8 +1,7 @@
 package com.example.springbatchexceptionhandle.ch_04_retry;
 
-import com.example.springbatchexceptionhandle.ch_03_skip.exception.NoSkippableException;
 import com.example.springbatchexceptionhandle.ch_04_retry.exception.RetryableException;
-import com.example.springbatchexceptionhandle.ch_04_retry.processor.RetryItemProcessor;
+import com.example.springbatchexceptionhandle.ch_04_retry.processor.RetryItemProcessorV1;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * Retry
@@ -110,6 +108,6 @@ public class RetryV1Configuration {
 
     @Bean
     public ItemProcessor<String, String> itemProcessor(){
-        return new RetryItemProcessor();
+        return new RetryItemProcessorV1();
     }
 }
