@@ -1,11 +1,13 @@
-package com.example.springbatchmultithread.ch02_async;
+package com.example.springbatchmultithread.ch03_multi_threaded_step;
 
+import com.example.springbatchmultithread.listener.CustomItemProcessListener;
+import com.example.springbatchmultithread.listener.CustomItemReadListener;
+import com.example.springbatchmultithread.listener.CustomItemWriteListener;
 import com.example.springbatchmultithread.listener.StopWatchJobListener;
 import com.example.springbatchmultithread.mapper.CustomerRowMapper;
 import com.example.springbatchmultithread.model.Customer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Future;
 import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +16,6 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.integration.async.AsyncItemProcessor;
-import org.springframework.batch.integration.async.AsyncItemWriter;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
@@ -24,23 +24,29 @@ import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilde
 import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
 import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 /**
- * AsyncITemProcessor / AsyncItemWriter
+ * Multi-threaded Step
  *
  * <pre>
- *      - 기본 개념
- *          - Step 안에서 ItemProcessor 가 비동기적으로 동작하는 구조
- *          - AsyncItemProcessor 와 AsyncItemWriter 가 함께 구성이 되어야함
- *          - AsyncItemProcessor 로부터 AsyncItemWriter 가 받는 최종 결과값은 List<Future<T>> 타입이며 비동기 실행이 완료될때 까지 대기한다.
- *          - spring-batch-integration 의존성이 필요하다.
+ *      - Step 내에서 Multi-Thread 로 chunk 기반 처리가 이루어지는 구조
+ *      - TaskExecutorRepeatTemplate 이 반복자로 사용되며 설정한 개수 (ThrottleLimit : default 4개) 만큼의 Thread 를 생성하여 수행한다.
+ *
+ *      - ItemReader 는 Thread-safe 인지 반드시 확인해야 한다.
+ *          - 데이터를 소스로부터 읽어오는 역할이기 때문에 Thread 마다 중복해서 데이터를 읽어오지 않도록 동기화가 보장되어 있어야 한다.
+ *      - Thread 마다 새로운 Chunk 가 할당되어 데이터 동기화가 보장된다.
+ *          - Thread 끼리 Chunk 를 서로 공유하지 않는다.
+ *
  * </pre>
  */
 @Slf4j
 @RequiredArgsConstructor
-//@Configuration
-public class AsyncConfiguration {
+@Configuration
+public class MultiThreadedStepConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -51,71 +57,37 @@ public class AsyncConfiguration {
     public Job batchJob1() {
         return jobBuilderFactory.get("batchJob1")
             .incrementer(new RunIdIncrementer())
-//            .start(step1())
-            .start(asyncStep1())
+            .start(step1())
             .listener(new StopWatchJobListener())
             .build();
     }
 
-    /**
-     * 동기식 Step
-     *
-     * @return
-     */
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-            .<Customer, Customer>chunk(100)
+            .<Customer, Customer>chunk(2)
             .reader(pagingItemReader())
+            .listener(new CustomItemReadListener()) // ItemReadListener
             .processor(customItemProcessor())
+            .listener(new CustomItemProcessListener()) // ItemProcessListener
             .writer(customItemWriter())
-            .build();
-    }
-
-    /**
-     * 비동기식 Step
-     *
-     * @return
-     */
-    @Bean
-    public Step asyncStep1() {
-        return stepBuilderFactory.get("asyncStep1")
-            .<Customer, Future<Customer>>chunk(100)
-            .reader(pagingItemReader()) // 일반적인 ItemReader
-            /*
-             * 비동기 실행을 위한 AsyncItemProcessor 설정
-             *  - Thread Pool 개수 만큼 Thread 가 생성되어 비동기로 실행
-             *  - 내부적으로 실제 ItemProcessor 에게 실행을 위임하고 결과를 Future 에 저장
-             */
-            .processor(asyncItemProcessor())
-            /*
-             * AsyncItemWriter 설정
-             *  - 비동기 실행 결과값들을 모두 받아오기까지 대기함
-             *  - 내부적으로 실제 ItemWriter 에게 최종 결과값을 넘겨주고 실행을 위임한다.
-             */
-            .writer(asyncItemWriter())
+            .listener(new CustomItemWriteListener()) // ItemWriteListener
+            // SimpleAsyncTaskExecutor 는 Spring 에서 제공하는 비동기 ThreadExecutor
+//            .taskExecutor(new SimpleAsyncTaskExecutor()) // Thread 생성 및 실행을 위한 taskExecutor 설정
+            .taskExecutor(taskExecutor()) // 설정하지 않을 경우 Single Thread 로 실행됨
             .build();
     }
 
     @Bean
-    public ItemWriter<Future<Customer>> asyncItemWriter() {
+    public TaskExecutor taskExecutor() {
+        // Java 에서 제공하는 ThreadPoolTaskExecutor 를 사용해서 Thread Pool 을 생성하는 것을 권장
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
 
-        AsyncItemWriter<Customer> asyncItemWriter = new AsyncItemWriter<>();
+        taskExecutor.setCorePoolSize(4); // 동시에 실행될 thread 개수
+        taskExecutor.setMaxPoolSize(8); // 최대 thread 생성 개수
+        taskExecutor.setThreadNamePrefix("async-thread-"); // thread 이름의 prefix
 
-        asyncItemWriter.setDelegate(customItemWriter()); // 위임할 itemWriter 를 넣은다.
-
-        return asyncItemWriter;
-    }
-
-    @Bean
-    public ItemProcessor<Customer, Future<Customer>> asyncItemProcessor() {
-
-        AsyncItemProcessor<Customer, Customer> asyncItemProcessor = new AsyncItemProcessor<>();
-        asyncItemProcessor.setDelegate(customItemProcessor()); // 위임할 ItemProcessor 를 넣어준다.
-        // Spring 에서 제공해주는 AsyncTaskExecutor 사용
-        asyncItemProcessor.setTaskExecutor(new SimpleAsyncTaskExecutor());
-
-        return asyncItemProcessor;
+        return taskExecutor;
     }
 
     @Bean
@@ -128,6 +100,8 @@ public class AsyncConfiguration {
         queryProvider.setFromClause("from customer");
         queryProvider.setSortKeys(sortKeys);
 
+        // ! JdbcCursorItemReader / JpaCursorItemReader 인 경우 Thread-safe 를 제공해 주지않음
+        // * JdbcPagingItemReader / JpaPagingItemReader 가 Thread-safe 를 제공함
         return new JdbcPagingItemReaderBuilder<Customer>()
             .name("jdbc-paging-reader")
             .dataSource(dataSource)

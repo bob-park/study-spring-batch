@@ -1,4 +1,4 @@
-package com.example.springbatchmultithread.ch02_async.listener;
+package com.example.springbatchmultithread.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobExecution;

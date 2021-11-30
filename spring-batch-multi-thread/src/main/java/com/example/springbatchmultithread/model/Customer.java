@@ -1,4 +1,4 @@
-package com.example.springbatchmultithread.ch02_async.model;
+package com.example.springbatchmultithread.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

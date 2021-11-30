@@ -1,6 +1,6 @@
-package com.example.springbatchmultithread.ch02_async.mapper;
+package com.example.springbatchmultithread.mapper;
 
-import com.example.springbatchmultithread.ch02_async.model.Customer;
+import com.example.springbatchmultithread.model.Customer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
