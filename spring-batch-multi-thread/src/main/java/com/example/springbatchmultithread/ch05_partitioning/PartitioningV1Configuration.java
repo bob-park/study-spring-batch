@@ -64,7 +64,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class PartitioningV1Configuration {
 
     private final JobBuilderFactory jobBuilderFactory;
