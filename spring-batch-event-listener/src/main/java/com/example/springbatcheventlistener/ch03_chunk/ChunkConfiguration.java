@@ -60,7 +60,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class ChunkConfiguration {
 
     private final JobBuilderFactory jobBuilderFactory;
