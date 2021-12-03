@@ -1,7 +1,7 @@
 package com.example.springbatchtest.ch01_spring_batch_test;
 
-import com.example.springbatchtest.mapper.CustomerRowMapper;
-import com.example.springbatchtest.model.Customer;
+import com.example.springbatchtest.common.mapper.CustomerRowMapper;
+import com.example.springbatchtest.common.model.Customer;
 import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;

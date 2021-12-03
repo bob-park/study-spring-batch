@@ -1,4 +1,4 @@
-package com.example.springbatchtest.model;
+package com.example.springbatchtest.common.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

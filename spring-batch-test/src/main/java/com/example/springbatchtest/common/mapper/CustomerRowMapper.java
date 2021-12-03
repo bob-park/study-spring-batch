@@ -1,6 +1,6 @@
-package com.example.springbatchtest.mapper;
+package com.example.springbatchtest.common.mapper;
 
-import com.example.springbatchtest.model.Customer;
+import com.example.springbatchtest.common.model.Customer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
