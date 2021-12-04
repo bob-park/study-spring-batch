@@ -40,6 +40,10 @@ dependencies {
 
     // apache
     implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+
+    // model mapper
+    implementation'org.modelmapper:modelmapper:2.4.4'
+
 }
 
 test {
