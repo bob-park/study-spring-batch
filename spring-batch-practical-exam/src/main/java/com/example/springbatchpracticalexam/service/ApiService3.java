@@ -13,7 +13,7 @@ public class ApiService3 extends AbstractApiService {
     @Override
     public ApiResponseVO doApiService(RestTemplate restTemplate, ApiInfo apiInfo) {
         ResponseEntity<String> response = restTemplate.postForEntity(
-            "http://localhost:8083/api/product/1", apiInfo, String.class);
+            "http://localhost:8083/api/product/3", apiInfo, String.class);
 
         HttpStatus httpStatus = response.getStatusCode();
 
