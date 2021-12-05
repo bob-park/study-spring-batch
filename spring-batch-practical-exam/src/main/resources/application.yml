@@ -34,8 +34,8 @@ spring:
     jdbc:
       initialize-schema: always
     job:
-      #      names: job1
-      names: ${job.name:NONE}
+      enabled: false
+
   #jpa
   jpa:
     hibernate:
