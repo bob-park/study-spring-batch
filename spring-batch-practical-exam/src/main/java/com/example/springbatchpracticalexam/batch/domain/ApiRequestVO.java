@@ -9,5 +9,6 @@ public class ApiRequestVO {
 
     private Long id;
     private ProductVO product;
+    private ApiResponseVO responseVO;
 
 }
